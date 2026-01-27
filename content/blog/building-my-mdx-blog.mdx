@@ -1,0 +1,243 @@
+---
+title: "Building My Personal Blog with Next.js and MDX"
+date: "2026-01-20"
+description: "A comprehensive walkthrough of how I built this blog using Next.js 16, MDX, and Tailwind CSS with a custom pink creative theme."
+tags: ["nextjs", "mdx", "tailwind", "tutorial", "web development"]
+cover: "/images/blog-project-cover.jpg"
+---
+
+# Building My Personal Blog with Next.js and MDX
+
+I recently built this blog from scratch, and I wanted to share the entire process with you. This post covers the architecture, design decisions, and technical implementation details.
+
+## Why I Chose This Stack
+
+After evaluating several options, I settled on a stack that prioritises performance, developer experience, and content flexibility.
+
+### Next.js 16
+
+Next.js provides an excellent foundation for content-heavy websites. The App Router architecture enables clean separation between server and client components, whilst Server Components allow efficient data fetching without client-side JavaScript overhead.
+
+### MDX for Content
+
+MDX combines the simplicity of Markdown with the power of React components. This means I can write posts in a familiar format whilst embedding interactive elements when needed.
+
+```typescript
+// How MDX content is processed
+import { MDXRemote } from 'next-mdx-remote/rsc'
+import { mdxComponents } from '@/components/mdx-components'
+
+export function MDXContent({ source }: { source: string }) {
+  return (
+    <MDXRemote 
+      source={source} 
+      components={mdxComponents}
+    />
+  )
+}
+```
+
+### Tailwind CSS
+
+Tailwind enables rapid styling with utility classes. Combined with CSS custom properties, it provides a maintainable theming system.
+
+## The Pink Creative Theme
+
+I designed a custom colour palette that reflects my personal brand. The theme uses CSS custom properties for easy customisation.
+
+```css
+:root {
+  --Background: #FFF5F7;
+  --Surface: #FFFFFF;
+  --Text-main: #1A1A2E;
+  --Text-mute: #6B7280;
+  --Border: #F9D5E5;
+  --Accent: #EC4899;
+}
+```
+
+These variables cascade through the entire application, ensuring visual consistency across all components.
+
+## Project Architecture
+
+The file structure follows Next.js conventions with some custom additions for blog functionality.
+
+```
+/app
+  /blog
+    /[slug]
+      page.tsx      # Individual post pages
+    page.tsx        # Blog listing
+  page.tsx          # Homepage
+  layout.tsx        # Root layout
+/components
+  blog-card.tsx     # Post preview cards
+  header.tsx        # Navigation
+  mdx-components.tsx # Custom MDX renderers
+/content
+  /blog
+    *.mdx           # Blog posts
+/lib
+  blog.ts           # Post fetching utilities
+  blog-types.ts     # TypeScript definitions
+```
+
+## Content Management
+
+Blog posts reside in the `/content/blog` directory as MDX files. Each post requires frontmatter metadata.
+
+```yaml
+---
+title: "Post Title"
+date: "2026-01-27"
+description: "Brief description for SEO and previews"
+tags: ["tag1", "tag2"]
+cover: "/images/cover.jpg"
+---
+```
+
+The `lib/blog.ts` module handles reading and parsing these files using the `gray-matter` package.
+
+```typescript
+export function getAllPosts(): PostMeta[] {
+  const files = fs.readdirSync(POSTS_DIRECTORY)
+  
+  return files
+    .filter(file => file.endsWith('.mdx'))
+    .map(file => {
+      const content = fs.readFileSync(
+        path.join(POSTS_DIRECTORY, file), 
+        'utf-8'
+      )
+      const { data } = matter(content)
+      return {
+        slug: file.replace('.mdx', ''),
+        frontmatter: data as PostFrontmatter
+      }
+    })
+    .sort((a, b) => 
+      new Date(b.frontmatter.date).getTime() - 
+      new Date(a.frontmatter.date).getTime()
+    )
+}
+```
+
+## Custom Syntax Highlighting
+
+Rather than relying on external libraries, I implemented a lightweight tokeniser for code blocks. This approach reduces bundle size whilst maintaining attractive syntax highlighting.
+
+```typescript
+function tokenize(code: string): Token[] {
+  const tokens: Token[] = []
+  let remaining = code
+  
+  while (remaining.length > 0) {
+    // Match comments, strings, keywords, etc.
+    // Return typed tokens for consistent styling
+  }
+  
+  return tokens
+}
+```
+
+The tokeniser identifies comments, strings, keywords, numbers, functions, and operators, applying appropriate colour classes to each.
+
+## Scroll Reveal Animations
+
+To enhance the user experience, I added scroll-triggered animations using the Intersection Observer API.
+
+```typescript
+useEffect(() => {
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('revealed')
+        }
+      })
+    },
+    { threshold: 0.1 }
+  )
+  
+  // Observe all elements with reveal classes
+}, [])
+```
+
+Elements fade and slide into view as users scroll, creating a polished, modern feel.
+
+## RSS Feed
+
+The blog includes an RSS feed for readers who prefer feed aggregators. The `/app/rss.xml/route.ts` file generates valid XML dynamically.
+
+```typescript
+export async function GET() {
+  const posts = getAllPosts()
+  
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
+    <rss version="2.0">
+      <channel>
+        <title>Nayan Das Blog</title>
+        ${posts.map(post => `
+          <item>
+            <title>${post.frontmatter.title}</title>
+            <link>${SITE_URL}/blog/${post.slug}</link>
+          </item>
+        `).join('')}
+      </channel>
+    </rss>`
+  
+  return new Response(xml, {
+    headers: { 'Content-Type': 'application/xml' }
+  })
+}
+```
+
+## Typography and Fonts
+
+The blog employs three carefully selected fonts:
+
+- **Inter** for body text, ensuring excellent readability
+- **Cal Sans** for headings, adding personality
+- **JetBrains Mono** for code blocks, optimised for technical content
+
+```typescript
+const inter = Inter({ subsets: ['latin'] })
+const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'] })
+const calSans = localFont({
+  src: '../public/fonts/CalSans-SemiBold.woff2'
+})
+```
+
+## Performance Considerations
+
+Several optimisations ensure fast page loads:
+
+1. **Server Components** - Most pages render on the server, minimising client JavaScript
+2. **Static Generation** - Blog posts are statically generated at build time
+3. **Image Optimisation** - Next.js automatically optimises images
+4. **Minimal Dependencies** - Only essential packages are included
+
+## Lessons Learned
+
+Building this blog taught me several valuable lessons:
+
+- **Separation of concerns matters** - Keeping server and client code distinct simplifies debugging
+- **Custom solutions can outperform libraries** - The syntax highlighter is lighter than alternatives
+- **Design systems save time** - CSS custom properties enable rapid, consistent styling
+
+## What Comes Next
+
+I plan to add several features in future updates:
+
+- Search functionality
+- Dark mode toggle
+- Reading time estimates
+- Related posts suggestions
+
+## Conclusion
+
+This blog represents my approach to web development: clean code, thoughtful design, and attention to detail. The combination of Next.js, MDX, and Tailwind CSS provides a solid foundation for content creation.
+
+Feel free to explore the source code and adapt it for your own projects. If you have questions or suggestions, connect with me on GitHub or Discord.
+
+Happy coding!
