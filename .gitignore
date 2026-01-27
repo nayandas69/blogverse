@@ -8,6 +8,11 @@
 # production
 /build
 
+# Lock JSON files
+/package-lock.json
+/yarn.lock
+/pnpm-lock.yaml
+
 # debug
 npm-debug.log*
 yarn-debug.log*
