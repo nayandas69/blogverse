@@ -1,0 +1,58 @@
+{
+  "name": "blogverse",
+  "version": "0.1.0",
+  "description": "Personal blog of Nayan Das - sharing thoughts on code, creativity, and tech",
+  "author": "nayandas69",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nayandas69/blogverse"
+  },
+  "homepage": "https://github.com/nayandas69/blogverse#readme",
+  "bugs": {
+    "url": "https://github.com/nayandas69/blogverse/issues"
+  },
+  "keywords": [
+    "blog",
+    "mdx",
+    "nextjs",
+    "react",
+    "typescript",
+    "tailwindcss",
+    "personal-blog",
+    "markdown",
+    "pink-theme"
+  ],
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "gray-matter": "4.0.3",
+    "lucide-react": "^0.454.0",
+    "next": "16.0.10",
+    "next-mdx-remote": "5.0.0",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "remark-gfm": "4.0.1",
+    "tailwind-merge": "^3.3.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.9",
+    "@types/node": "^22",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "postcss": "^8.5",
+    "tailwindcss": "^4.1.9",
+    "tw-animate-css": "1.3.3",
+    "typescript": "^5"
+  },
+  "engines": {
+    "node": "24.x"
+  }
+}
