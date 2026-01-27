@@ -1,0 +1,11 @@
+# Images Directory
+
+Place your blog cover images and other media here.
+
+Recommended structure:
+- /public/images/    - Blog cover images and general images
+- /public/videos/    - Video files for embedding
+
+Supported formats:
+- Images: jpg, png, webp, gif, svg
+- Videos: mp4, webm
