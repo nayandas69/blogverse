@@ -12,7 +12,7 @@
  */
 
 import { Suspense } from "react"
-import { getAllPosts, getAllTags } from "@/lib/blog"
+import { getAllPosts, getTopTags } from "@/lib/blog"
 import { BlogContent, BlogContentSkeleton } from "@/components/blog-content"
 
 export const metadata = {
@@ -22,7 +22,7 @@ export const metadata = {
 
 export default function BlogPage() {
   const allPosts = getAllPosts()
-  const tags = getAllTags()
+  const tags = getTopTags(5)
 
   return (
     <Suspense fallback={<BlogContentSkeleton />}>
