@@ -26,6 +26,7 @@ import matter from 'gray-matter'
 export interface PostFrontmatter {
   title: string
   date: string
+  updated?: string // Optional: date when post was last updated
   description: string
   tags: string[]
   cover?: string
