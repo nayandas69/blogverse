@@ -77,7 +77,7 @@ export default async function PostPage({ params }: PostPageProps) {
   }
 
   const { frontmatter, content } = post
-  const { title, date, description, tags, cover } = frontmatter
+  const { title, date, updated, description, tags, cover } = frontmatter
 
   // Get related posts (excluding current post)
   const recentPosts = getRecentPosts(4).filter((p) => p.slug !== slug).slice(0, 3)
@@ -86,6 +86,48 @@ export default async function PostPage({ params }: PostPageProps) {
     <article className="container mx-auto px-4 py-12 md:py-16">
       {/* Post Header */}
       <header className="max-w-3xl mx-auto mb-10">
+        {/* Title */}
+        <h1 className="font-heading text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4 text-balance">
+          {title}
+        </h1>
+
+        {/* Author info with profile picture */}
+        <div className="flex items-center gap-4 mb-4">
+          <a
+            href="https://github.com/nayandas69"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-3 group"
+          >
+            <Image
+              src="https://avatars.githubusercontent.com/u/174907517?v=4"
+              alt="Nayan Das"
+              width={36}
+              height={36}
+              className="rounded-full"
+            />
+            <div className="flex flex-col">
+              <span className="text-sm font-medium text-foreground group-hover:text-primary transition-colors">
+                Nayan Das
+              </span>
+              <span className="text-xs text-primary">
+                @nayandas69
+              </span>
+            </div>
+          </a>
+          <span className="text-border">|</span>
+          <div className="flex flex-col text-sm text-muted-foreground">
+            <time dateTime={date}>
+              {formatDate(date)}
+            </time>
+            {updated && (
+              <time dateTime={updated} className="text-xs">
+                Updated: {formatDate(updated)}
+              </time>
+            )}
+          </div>
+        </div>
+
         {/* Tags */}
         {tags && tags.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-4">
@@ -100,18 +142,6 @@ export default async function PostPage({ params }: PostPageProps) {
             ))}
           </div>
         )}
-
-        {/* Title */}
-        <h1 className="font-heading text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4 text-balance">
-          {title}
-        </h1>
-
-        {/* Meta info */}
-        <div className="flex items-center gap-4 text-muted-foreground">
-          <time dateTime={date}>{formatDate(date)}</time>
-          <span className="text-border">|</span>
-          <span>Nayan Das</span>
-        </div>
 
         {/* Description */}
         {description && (
