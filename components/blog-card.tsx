@@ -59,25 +59,25 @@ export function BlogCard({ post, featured = false }: BlogCardProps) {
         "hover:-translate-y-1"
       )}
     >
-      {/* Cover Image - Smaller aspect ratio */}
-      {cover && (
-        <Link
-          href={`/blog/${slug}`}
-          className="relative overflow-hidden aspect-[16/9]"
-        >
-          <Image
-            src={cover || "/placeholder.svg"}
-            alt={title}
-            fill
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
-          />
-          {/* Gradient overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-        </Link>
-      )}
-
       {/* Content */}
       <div className="flex flex-1 flex-col p-4">
+        {/* Cover Image - Small thumbnail inline with content */}
+        {cover && (
+          <Link
+            href={`/blog/${slug}`}
+            className="relative overflow-hidden rounded-lg aspect-[16/9] mb-3 block"
+          >
+            <Image
+              src={cover || "/placeholder.svg"}
+              alt={title}
+              fill
+              className="object-cover transition-transform duration-500 group-hover:scale-105"
+            />
+            {/* Gradient overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+          </Link>
+        )}
+
         {/* Tags */}
         {tags && tags.length > 0 && (
           <div className="flex flex-wrap gap-1.5 mb-2">

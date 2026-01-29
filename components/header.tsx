@@ -6,7 +6,7 @@
  * Features:
  * - Glassmorphism effect with blur
  * - Scroll-aware transparency
- * - Animated mobile menu
+ * - GitHub star count from repo
  * - Active link indicators
  * 
  * @author nayandas69
@@ -15,7 +15,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useState, useEffect } from "react"
-import { Menu, X } from "lucide-react"
+import { Star } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const navLinks = [
@@ -24,10 +24,12 @@ const navLinks = [
   { href: "/about", label: "About" },
 ]
 
+const GITHUB_REPO = "nayandas69/blogverse"
+
 export function Header() {
   const pathname = usePathname()
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const [starCount, setStarCount] = useState<number | null>(null)
 
   // Track scroll position for transparency effect
   useEffect(() => {
@@ -37,6 +39,30 @@ export function Header() {
     window.addEventListener("scroll", handleScroll)
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
+
+  // Fetch GitHub star count
+  useEffect(() => {
+    const fetchStarCount = async () => {
+      try {
+        const response = await fetch(`https://api.github.com/repos/${GITHUB_REPO}`)
+        if (response.ok) {
+          const data = await response.json()
+          setStarCount(data.stargazers_count)
+        }
+      } catch (error) {
+        console.error("Failed to fetch star count:", error)
+      }
+    }
+    fetchStarCount()
+  }, [])
+
+  // Format star count (e.g., 1234 -> 1.2k)
+  const formatStarCount = (count: number): string => {
+    if (count >= 1000) {
+      return `${(count / 1000).toFixed(1)}k`
+    }
+    return count.toString()
+  }
 
   return (
     <header
@@ -80,50 +106,26 @@ export function Header() {
             ))}
           </nav>
 
-          {/* Mobile Menu Button */}
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className={cn(
-              "md:hidden p-2 rounded-lg transition-colors",
-              mobileMenuOpen
-                ? "bg-pink-100 text-pink-600"
-                : "text-gray-600 hover:bg-pink-50 hover:text-pink-600"
-            )}
-            aria-label="Toggle menu"
+          {/* GitHub Star Button */}
+          <a
+            href={`https://github.com/${GITHUB_REPO}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 px-3 py-1.5 bg-white border border-gray-200 rounded-full text-sm font-medium text-gray-700 hover:border-gray-300 hover:bg-gray-50 transition-colors shadow-sm"
           >
-            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
-        </div>
-
-        {/* Mobile Menu */}
-        <div
-          className={cn(
-            "md:hidden overflow-hidden transition-all duration-300 ease-in-out",
-            mobileMenuOpen ? "max-h-64 opacity-100" : "max-h-0 opacity-0"
-          )}
-        >
-          <nav className="py-4 space-y-1 border-t border-pink-100/50">
-            {navLinks.map((link, index) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={() => setMobileMenuOpen(false)}
-                className={cn(
-                  "flex items-center px-4 py-3 rounded-lg text-sm font-medium transition-all",
-                  pathname === link.href
-                    ? "bg-pink-50 text-pink-600"
-                    : "text-gray-600 hover:bg-pink-50/50 hover:text-pink-600"
-                )}
-                style={{
-                  transitionDelay: mobileMenuOpen ? `${index * 50}ms` : "0ms",
-                  transform: mobileMenuOpen ? "translateX(0)" : "translateX(-10px)",
-                  opacity: mobileMenuOpen ? 1 : 0,
-                }}
-              >
-                {link.label}
-              </Link>
-            ))}
-          </nav>
+            <svg
+              viewBox="0 0 16 16"
+              className="w-4 h-4 text-gray-700"
+              fill="currentColor"
+            >
+              <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z" />
+            </svg>
+            {starCount !== null && (
+              <span className="text-gray-600 border-l border-gray-200 pl-2">
+                {formatStarCount(starCount)}
+              </span>
+            )}
+          </a>
         </div>
       </div>
     </header>

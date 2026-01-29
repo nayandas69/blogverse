@@ -26,6 +26,7 @@ import matter from 'gray-matter'
 export interface PostFrontmatter {
   title: string
   date: string
+  updated?: string // Optional: date when post was last updated
   description: string
   tags: string[]
   cover?: string
@@ -130,6 +131,30 @@ export function getAllTags(): string[] {
   })
 
   return Array.from(tagsSet).sort()
+}
+
+/**
+ * Get top tags by usage count
+ * @param count - Number of top tags to return (default: 5)
+ */
+export function getTopTags(count: number = 5): string[] {
+  const posts = getAllPosts()
+  const tagCounts = new Map<string, number>()
+
+  posts.forEach((post) => {
+    post.frontmatter.tags?.forEach((tag: string) => {
+      tagCounts.set(tag, (tagCounts.get(tag) || 0) + 1)
+    })
+  })
+
+  // Sort by count descending, then alphabetically for ties
+  return Array.from(tagCounts.entries())
+    .sort((a, b) => {
+      if (b[1] !== a[1]) return b[1] - a[1]
+      return a[0].localeCompare(b[0])
+    })
+    .slice(0, count)
+    .map(([tag]) => tag)
 }
 
 /**
