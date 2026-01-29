@@ -53,6 +53,7 @@ export default function AboutPage() {
           </div>
         </ScrollReveal>
 
+        {/* What I Do Section Currently Hidden
         <ScrollReveal variant="up" delay={200}>
           <div className="mb-12">
             <h2 className="font-heading text-2xl font-bold text-gray-900 mb-6">
@@ -83,6 +84,7 @@ export default function AboutPage() {
             </ul>
           </div>
         </ScrollReveal>
+        */}
 
         <ScrollReveal variant="up" delay={300}>
           <div className="mb-12">
