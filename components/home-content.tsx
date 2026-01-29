@@ -75,6 +75,7 @@ export function HomeContent({ recentPosts, tags }: HomeContentProps) {
             </ScrollReveal>
 
             {/* Tags Section */}
+            {/* 
             {tags.length > 0 && (
                 <ScrollReveal variant="up" delay={100}>
                     <section className="mb-12">
@@ -85,6 +86,7 @@ export function HomeContent({ recentPosts, tags }: HomeContentProps) {
                     </section>
                 </ScrollReveal>
             )}
+            */}
 
             {/* Latest Posts Section - Only 3 posts */}
             <ScrollReveal variant="up" delay={200}>
