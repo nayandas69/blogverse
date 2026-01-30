@@ -1,0 +1,267 @@
+---
+title: "Epic Games Freebie Notifier: Never Miss Another Free Game"
+description: "Learn how to set up the Epic Games Freebie Notifier using Python and GitHub Actions to receive Discord notifications for free games."
+date: "2026-01-30"
+tags: ["Discord", "Automation", "Gaming", "GitHub Actions", "Python", "Epic Games"]
+---
+
+# Epic Games Freebie Notifier: Never Miss Another Free Game
+
+In the competitive landscape of digital gaming distribution, Epic Games Store has distinguished itself through its generous weekly free game programme, offering titles that frequently carry substantial retail value. However, the ephemeral nature of these offers—typically lasting merely one week—means that countless gamers inadvertently miss opportunities to expand their libraries at no cost. The **Epic Games Freebie Notifier** addresses this predicament with elegant simplicity, delivering automated Discord notifications the moment new free games become available.
+
+## The Genesis of the Project
+
+The impetus behind this project stems from a universal frustration: discovering that a coveted game was offered free the previous week, only to find the promotion has concluded. Rather than relying upon memory or manually checking the Epic Games Store, this tool transforms the passive act of monitoring into an automated, instantaneous notification system.
+
+> **Information:** If you simply wish to receive notifications without the technical setup, you can join the developer's [Discord server](https://discord.gg/u9XfHZN8K9) and receive alerts automatically.
+
+## Core Functionality
+
+The Epic Games Freebie Notifier operates on a straightforward yet robust principle: periodically query the Epic Games Store API, identify currently free titles, and dispatch richly formatted Discord notifications for any new discoveries.
+
+### What You Receive
+
+Each notification arrives as a polished Discord embed containing:
+
+- **Game Title** - The complete name of the free offering
+- **Cover Artwork** - High-resolution promotional imagery
+- **Original Price** - The standard retail value you're saving
+- **Expiration Date** - Precisely when the offer concludes
+- **Direct Claim Link** - One-click access to secure your copy
+
+### Intelligent Deduplication
+
+The system maintains a persistent JSON file tracking previously announced games, ensuring you receive each notification precisely once. This mechanism prevents the irritation of duplicate alerts whilst guaranteeing comprehensive coverage of all promotions.
+
+## Technical Architecture
+
+### API Integration
+
+The project interfaces directly with the Epic Games Store backend:
+
+```bash
+https://store-site-backend-static.ak.epicgames.com/freeGamesPromotions
+```
+
+This endpoint provides comprehensive data including game titles, promotional periods, pricing information, and asset URLs—all parsed and processed by the notification script.
+
+### Data Extraction
+
+The following information is systematically extracted from each game listing:
+
+| Field | Description |
+|-------|-------------|
+| `title` | The game's display name |
+| `productSlug` | URL identifier for the store page |
+| `price` | Original and discounted pricing |
+| `endDate` | Promotion expiration timestamp |
+| `keyImages` | Promotional artwork URLs |
+
+### Dependencies
+
+The project maintains a deliberately minimal dependency footprint:
+
+```text
+requests>=2.31.0,<3.0.0
+python-dotenv>=1.0.0,<2.0.0
+```
+
+This restraint ensures rapid deployment, minimal security surface, and straightforward maintenance.
+
+## Installation and Configuration
+
+### Method One: Local Execution
+
+For those preferring direct control, the local installation process is refreshingly uncomplicated:
+
+```bash
+# Clone the repository
+git clone https://github.com/nayandas69/EpicGames-Freebie-Notifier.git
+cd EpicGames-Freebie-Notifier
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Configure environment
+echo "DISCORD_WEBHOOK=your_webhook_url_here" > .env
+
+# Execute
+python main.py
+```
+
+> **Caution:** Never commit your `.env` file to version control. The Discord webhook URL grants full posting access to your channel and should be treated as a sensitive credential.
+
+### Method Two: GitHub Actions (Recommended)
+
+The repository includes a pre-configured GitHub Actions workflow that operates autonomously, requiring no local infrastructure whatsoever.
+
+#### Step 1: Fork the Repository
+
+Create your own copy of the repository through GitHub's fork functionality.
+
+#### Step 2: Configure Discord Webhook Secret
+
+1. Navigate to your repository's **Settings**
+2. Select **Secrets and variables** → **Actions**
+3. Click **New repository secret**
+4. Name: `DISCORD_WEBHOOK`
+5. Value: Your Discord webhook URL
+
+#### Step 3: Configure Personal Access Token
+
+The workflow requires a Personal Access Token (PAT) to commit tracking updates:
+
+1. Visit **GitHub Settings** → **Developer settings** → **Personal access tokens**
+2. Generate a new token (classic) with these scopes:
+   - `public_repo` (under repo section)
+   - `workflow`
+3. Add this token as a repository secret named `PAT_TOKEN`
+
+> **Information:** The PAT_TOKEN enables the workflow to commit changes to the `epics.json` tracking file, ensuring persistent deduplication across executions.
+
+### Creating a Discord Webhook
+
+For those unfamiliar with Discord webhooks:
+
+1. Open your Discord server settings
+2. Navigate to **Integrations** → **Webhooks**
+3. Click **New Webhook**
+4. Configure the name and channel
+5. Copy the webhook URL
+
+> **Caution:** Ensure the webhook targets an appropriate channel. Notifications will be visible to all members with access to that channel.
+
+## The GitHub Actions Workflow
+
+The included workflow configuration demonstrates sophisticated automation practices:
+
+```yaml
+name: Epic Games to Discord Notifier
+
+on:
+  schedule:
+    - cron: '5 16 * * *'  # Daily execution
+  workflow_dispatch:  # Manual trigger support
+
+permissions:
+  contents: write  # Required for tracking file updates
+```
+
+### Key Features
+
+- **Scheduled Execution** - Runs daily at a configured time
+- **Manual Override** - Supports on-demand execution via GitHub Actions interface
+- **Automatic Commits** - Persists tracking data without manual intervention
+- **Python Caching** - Utilises pip caching for rapid dependency installation
+
+## Code Architecture
+
+The project exemplifies clean Python architecture with clearly delineated responsibilities:
+
+### Core Functions
+
+```python
+def get_free_games() -> List[Dict]:
+    """Fetches currently free games from Epic Games Store API."""
+    
+def send_discord_notification(game: Dict) -> bool:
+    """Sends rich embed notification to Discord webhook."""
+    
+def cleanup_expired_games(posted_games: Dict, current_games: List[Dict]) -> Dict:
+    """Removes expired games from tracking to maintain efficiency."""
+```
+
+### Error Handling
+
+Comprehensive exception handling ensures the system remains resilient:
+
+- **Network Failures** - Gracefully handles API timeouts and connectivity issues
+- **Malformed Responses** - Validates API response structure before processing
+- **Webhook Errors** - Logs Discord API failures without crashing
+- **Configuration Errors** - Provides detailed guidance for misconfiguration
+
+### Logging
+
+The system maintains detailed logs for debugging and monitoring:
+
+```python
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler('epic_notifier.log'),
+        logging.StreamHandler(sys.stdout)
+    ]
+)
+```
+
+## Customisation Opportunities
+
+### Notification Formatting
+
+The Discord embed structure resides in the `send_discord_notification` function, allowing customisation of colours, fields, and formatting to match your server's aesthetic.
+
+### Scheduling Frequency
+
+Modify the cron expression in the GitHub Actions workflow to adjust check frequency:
+
+```yaml
+schedule:
+  - cron: '0 */6 * * *'  # Every 6 hours
+```
+
+> **Information:** Epic Games typically releases new free games on Thursdays, though the schedule occasionally varies. Hourly checks ensure prompt notification whilst remaining respectful of API resources.
+
+### Mystery Game Filtering
+
+The code automatically filters mystery games (unrevealed upcoming titles), displaying only claimable promotions:
+
+```python
+if "mystery" in title.lower():
+    return None
+```
+
+## Operational Considerations
+
+### API Rate Limiting
+
+The Epic Games API does not publicly document rate limits, though the project's conservative request frequency has proven reliable in production operation.
+
+### Tracking File Management
+
+The `epics.json` file automatically grows and shrinks as games enter and leave the free promotion rotation. Expired entries are purged during each execution to maintain efficiency.
+
+### Timezone Awareness
+
+All timestamps utilise UTC for consistency. The workflow's cron schedule should be adjusted according to your timezone preferences.
+
+## Troubleshooting
+
+### Common Issues
+
+**Webhook Not Receiving Messages**
+- Verify the webhook URL is complete and correctly formatted
+- Confirm the target channel permits webhook messages
+- Check Discord server permissions
+
+**Duplicate Notifications**
+- Ensure `epics.json` persists between executions
+- For GitHub Actions, verify the PAT_TOKEN has correct permissions
+
+**No Games Detected**
+- Epic Games occasionally has brief periods without free promotions
+- Check the Epic Games Store directly to confirm current offerings
+
+## Licensing
+
+The project is distributed under the MIT License, granting unrestricted freedom to use, modify, and distribute the code for any purpose, commercial or otherwise.
+
+## Conclusion
+
+The Epic Games Freebie Notifier transforms the tedious task of monitoring free game releases into a fully automated experience. Whether deployed locally or through GitHub Actions, the system ensures you capture every promotional offering without lifting a finger. In an era where free games frequently rival premium releases in quality and scope, this tool pays dividends far exceeding its modest setup investment.
+
+The combination of clean Python architecture, Discord's rich notification capabilities, and GitHub Actions' zero-infrastructure automation creates a solution that exemplifies modern DevOps practices whilst delivering genuine practical value.
+
+---
+
+*Developed and maintained by [nayandas69](https://github.com/nayandas69)*
