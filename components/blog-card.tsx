@@ -101,7 +101,8 @@ export function BlogCard({ post, featured = false }: BlogCardProps) {
         {/* Title */}
         <h2 className="font-heading font-bold text-gray-900 group-hover:text-pink-600 transition-colors line-clamp-2 text-base leading-snug">
           <Link href={`/blog/${slug}`}>
-            {title}
+            {/* Truncate title if too long */}
+            {title.length > 35 ? `${title.slice(0, 35)}...` : title}
           </Link>
         </h2>
 
