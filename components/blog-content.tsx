@@ -9,12 +9,13 @@
  * @author nayandas69
  */
 
+import { useState, useMemo } from "react"
 import { useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { BlogCard, BlogCardSkeleton } from "@/components/blog-card"
 import { TagList } from "@/components/tag-list"
 import { ScrollReveal } from "@/components/scroll-reveal"
-import { Sparkles, Filter } from "lucide-react"
+import { Sparkles, Filter, Search, X } from "lucide-react"
 
 // Type definition (duplicated to avoid importing from blog.ts which uses fs)
 interface PostFrontmatter {
@@ -38,11 +39,30 @@ interface BlogContentProps {
 export function BlogContent({ allPosts, tags }: BlogContentProps) {
     const searchParams = useSearchParams()
     const activeTag = searchParams.get("tag")
+    const [searchQuery, setSearchQuery] = useState("")
 
-    // Filter posts client-side based on tag
-    const posts = activeTag
-        ? allPosts.filter(post => post.frontmatter.tags?.includes(activeTag))
-        : allPosts
+    // Filter posts client-side based on tag and search query
+    const posts = useMemo(() => {
+        let filtered = allPosts
+
+        // Filter by tag
+        if (activeTag) {
+            filtered = filtered.filter(post => post.frontmatter.tags?.includes(activeTag))
+        }
+
+        // Filter by search query (title, description, and tags)
+        if (searchQuery.trim()) {
+            const query = searchQuery.toLowerCase().trim()
+            filtered = filtered.filter(post => {
+                const title = post.frontmatter.title.toLowerCase()
+                const description = post.frontmatter.description.toLowerCase()
+                const tags = post.frontmatter.tags?.join(" ").toLowerCase() || ""
+                return title.includes(query) || description.includes(query) || tags.includes(query)
+            })
+        }
+
+        return filtered
+    }, [allPosts, activeTag, searchQuery])
 
     return (
         <div className="container mx-auto px-4 py-12 md:py-16">
@@ -58,30 +78,71 @@ export function BlogContent({ allPosts, tags }: BlogContentProps) {
                 </header>
             </ScrollReveal>
 
+            {/* Search Bar */}
+            <ScrollReveal variant="up" delay={100}>
+                <div className="mb-8">
+                    <div className="relative max-w-md">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                        <input
+                            type="text"
+                            placeholder="Search posts by title, description, or tags..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="w-full pl-12 pr-10 py-3 bg-white border border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all shadow-sm"
+                        />
+                        {searchQuery && (
+                            <button
+                                type="button"
+                                onClick={() => setSearchQuery("")}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors"
+                            >
+                                <X className="h-4 w-4" />
+                            </button>
+                        )}
+                    </div>
+                </div>
+            </ScrollReveal>
+
             {/* Tag Filter */}
             {tags.length > 0 && (
-                <ScrollReveal variant="up" delay={100}>
+                <ScrollReveal variant="up" delay={150}>
                     <section className="mb-8">
                         <TagList tags={tags} />
                     </section>
                 </ScrollReveal>
             )}
 
-            {/* Active Tag Indicator */}
-            {activeTag && (
-                <ScrollReveal variant="up" delay={150}>
-                    <div className="mb-6 flex items-center gap-2">
+            {/* Active Filters Indicator */}
+            {(activeTag || searchQuery) && (
+                <ScrollReveal variant="up" delay={200}>
+                    <div className="mb-6 flex flex-wrap items-center gap-2">
                         <Filter size={16} className="text-pink-500" />
-                        <p className="text-gray-600 text-sm">
-                            Showing posts tagged with{" "}
-                            <span className="font-semibold text-pink-600">{activeTag}</span>
-                        </p>
-                        <Link
-                            href="/blog"
+                        {activeTag && (
+                            <span className="text-gray-600 text-sm">
+                                Tag:{" "}
+                                <span className="font-semibold text-pink-600">{activeTag}</span>
+                            </span>
+                        )}
+                        {activeTag && searchQuery && (
+                            <span className="text-gray-400">+</span>
+                        )}
+                        {searchQuery && (
+                            <span className="text-gray-600 text-sm">
+                                Search:{" "}
+                                <span className="font-semibold text-pink-600">&quot;{searchQuery}&quot;</span>
+                            </span>
+                        )}
+                        <button
+                            type="button"
+                            onClick={() => setSearchQuery("")}
                             className="ml-2 text-sm text-gray-400 hover:text-pink-500 transition-colors"
                         >
-                            Clear filter
-                        </Link>
+                            {activeTag ? (
+                                <Link href="/blog">Clear all</Link>
+                            ) : (
+                                "Clear search"
+                            )}
+                        </button>
                     </div>
                 </ScrollReveal>
             )}
@@ -99,9 +160,26 @@ export function BlogContent({ allPosts, tags }: BlogContentProps) {
                 /* Empty state */
                 <ScrollReveal variant="scale">
                     <div className="text-center py-12 border-2 border-dashed border-pink-200 rounded-2xl bg-pink-50/30">
-                        <Sparkles className="mx-auto h-10 w-10 text-pink-300 mb-3" />
-                        {activeTag ? (
+                        {searchQuery ? (
                             <>
+                                <Search className="mx-auto h-10 w-10 text-pink-300 mb-3" />
+                                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                                    No results found
+                                </h3>
+                                <p className="text-gray-500 mb-4 text-sm">
+                                    No posts matching &quot;{searchQuery}&quot;{activeTag && ` with tag "${activeTag}"`} were found.
+                                </p>
+                                <button
+                                    type="button"
+                                    onClick={() => setSearchQuery("")}
+                                    className="inline-flex items-center px-4 py-2 bg-pink-100 text-pink-600 rounded-lg font-medium text-sm hover:bg-pink-200 transition-colors"
+                                >
+                                    Clear search
+                                </button>
+                            </>
+                        ) : activeTag ? (
+                            <>
+                                <Filter className="mx-auto h-10 w-10 text-pink-300 mb-3" />
                                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
                                     No posts found
                                 </h3>
@@ -117,6 +195,7 @@ export function BlogContent({ allPosts, tags }: BlogContentProps) {
                             </>
                         ) : (
                             <>
+                                <Sparkles className="mx-auto h-10 w-10 text-pink-300 mb-3" />
                                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
                                     No posts yet
                                 </h3>
