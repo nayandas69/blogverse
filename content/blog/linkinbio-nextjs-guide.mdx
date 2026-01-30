@@ -1,0 +1,318 @@
+---
+title: "Link in Bio: Building a Modern Portfolio with Next.js and Glassmorphism"
+description: "This link in bio project is a modern portfolio built with Next.js 14, featuring glassmorphism design, extensive social media integration, and performance optimisations. Learn how to set up, customise, and deploy your own stunning online presence."
+date: "2026-01-30"
+tags: ["Portfolio", "Glassmorphism", "TypeScript","Next.js", "React"]
+---
+
+# Link in Bio: Building a Modern Portfolio with Next.js and Glassmorphism
+
+In the contemporary digital landscape, establishing a compelling online presence has become indispensable for content creators, developers, and professionals alike. The **Link in Bio** project represents a sophisticated solution to this challenge, offering a visually stunning portfolio built with **Next.js 14** that seamlessly consolidates all your social media profiles and content into a single, elegant interface.
+
+## Understanding the Project's Vision
+
+The Link in Bio portfolio transcends the conventional notion of a simple landing page. It embodies a meticulously crafted digital showcase that employs cutting-edge design principles, most notably **glassmorphism**, to create an immersive user experience. This aesthetic approach, characterised by translucent surfaces, subtle blur effects, and sophisticated layering, has gained considerable traction in modern web design for its ability to convey depth and elegance simultaneously.
+
+> **What is Glassmorphism?** This design trend creates a "frosted glass" effect using background blur, transparency, and subtle borders. It provides visual hierarchy whilst maintaining a clean, modern aesthetic that works beautifully across both light and dark themes.
+
+## Distinguishing Features
+
+### Sophisticated Visual Design
+
+The project's visual identity is defined by several noteworthy characteristics:
+
+- **Glassmorphism UI** with meticulously calibrated backdrop blur effects
+- **Dual-theme support** featuring both dark and light modes with seamless system preference detection
+- **Fluid animations** powered by Framer Motion for enhanced interactivity
+- **Fully responsive layouts** optimised for devices ranging from mobile phones to desktop monitors
+- **Animated gradient backgrounds** that create visual interest without overwhelming the content
+
+### Comprehensive Social Integration
+
+One of the project's most compelling features is its extensive social media support:
+
+```typescript
+const socialLinks = [
+  {
+    name: "GitHub",
+    url: "https://github.com/yourusername",
+    icon: GitHubIcon,
+    color: "from-gray-700 to-gray-900",
+    hoverColor: "hover:from-gray-600 hover:to-gray-800",
+    bgColor: "bg-gray-800",
+  },
+  // Additional platforms...
+]
+```
+
+The system supports **18+ social platforms** including GitHub, Patreon, YouTube, Discord, Instagram, TikTok, WhatsApp, Telegram, Snapchat, Bluesky, Mastodon, LinkedIn, and many more. Each icon has been custom-designed with platform-specific colours and smooth hover animations.
+
+> **Tip:** You can easily activate additional social platforms by uncommenting the desired icons in the `components/social-icons.tsx` file and updating your URLs accordingly.
+
+### Interactive Blog Carousel
+
+The portfolio includes an auto-playing carousel that showcases your latest content:
+
+- **Automatic slide advancement** every five seconds
+- **Manual navigation** with previous/next controls
+- **Touch gesture support** for mobile users (swipe to navigate)
+- **YouTube video integration** with modal popup functionality
+- **Category and duration badges** for content organisation
+
+### Three-State Theme System
+
+Unlike conventional binary theme toggles, this project implements a sophisticated three-state system:
+
+```typescript
+const toggleTheme = () => {
+  let newTheme: "light" | "dark" | "system"
+  
+  if (themeMode === "light") {
+    newTheme = "dark"
+  } else if (themeMode === "dark") {
+    newTheme = "system"
+  } else {
+    newTheme = "light"
+  }
+  
+  setThemeMode(newTheme)
+  setCookie("theme-preference", newTheme)
+}
+```
+
+This approach allows users to choose between light mode, dark mode, or automatic system preference detection, with their choice persisting across browser sessions via cookies.
+
+## Technical Architecture
+
+### Technology Stack
+
+| Technology | Version | Purpose |
+|------------|---------|---------|
+| **Next.js** | 14.0+ | React framework with App Router |
+| **React** | 18.0+ | User interface library |
+| **TypeScript** | 5.0+ | Static type checking |
+| **Tailwind CSS** | 3.3+ | Utility-first styling |
+| **Framer Motion** | 10.16+ | Animation library |
+| **Lucide React** | 0.294+ | Icon components |
+| **Vercel Analytics** | Latest | Visitor tracking |
+| **Vercel Speed Insights** | Latest | Performance monitoring |
+
+### Performance Optimisations
+
+The project incorporates numerous performance enhancements:
+
+- **Automatic image optimisation** via Next.js Image component
+- **Font optimisation** with Google Fonts preloading
+- **Code splitting** handled automatically by the App Router
+- **DNS prefetching** for external resources
+- **Lighthouse scores** consistently exceeding 95 across all metrics
+
+> **Performance Note:** The project achieves excellent Core Web Vitals scores through careful attention to loading strategies, image optimisation, and efficient CSS delivery.
+
+## Installation and Setup
+
+### Prerequisites
+
+Before commencing installation, ensure your development environment meets these requirements:
+
+- **Node.js** version 18.0 or higher
+- **npm** version 8.0 or higher
+
+### Step-by-Step Installation
+
+1. **Clone the repository**
+
+```bash
+git clone https://github.com/nayandas69/linkinbio-nextjs.git
+cd linkinbio-nextjs
+```
+
+2. **Install dependencies**
+
+```bash
+npm install
+```
+
+3. **Configure environment variables**
+
+```bash
+cp .env.example .env.local
+```
+
+Then edit `.env.local` with your configuration:
+
+```bash
+# Google Search Console Verification
+GOOGLE_VERIFICATION_CODE=your-verification-code
+
+# Optional configurations
+NEXT_PUBLIC_SITE_URL=https://yourdomain.com
+NEXT_PUBLIC_AUTHOR_NAME=Your Name
+```
+
+4. **Add your images**
+
+Place the following images in the `public/images/` directory:
+
+- `profile.jpg` - Your profile photograph
+- `favicon.jpg` - Website favicon
+- `blog1.png`, `blog2.png`, `blog3.png` - Blog post thumbnails
+
+5. **Start the development server**
+
+```bash
+npm run dev
+```
+
+6. **Access the application**
+
+Navigate to [http://localhost:3000](http://localhost:3000) in your browser.
+
+> **Important:** Ensure all required images are placed in the correct directory before starting the development server to avoid missing asset errors.
+
+## Customisation Guide
+
+### Personalising Your Information
+
+Edit `app/page.tsx` to update your personal details:
+
+```typescript
+// Update the profile section
+<motion.h1 className="mb-2 text-xl font-bold">
+  Your Name
+  <VerificationBadgeIcon size={20} />
+</motion.h1>
+<motion.p className="text-sm">
+  Your professional tagline or bio
+</motion.p>
+```
+
+### Configuring Social Links
+
+Update the `socialLinks` array with your actual profile URLs:
+
+```typescript
+const socialLinks = [
+  {
+    name: "GitHub",
+    url: "https://github.com/yourusername",
+    icon: GitHubIcon,
+    color: "from-gray-700 to-gray-900",
+    hoverColor: "hover:from-gray-600 hover:to-gray-800",
+    bgColor: "bg-gray-800",
+  },
+  {
+    name: "YouTube",
+    url: "https://youtube.com/@yourchannel",
+    icon: YouTubeIcon,
+    color: "from-red-500 to-red-700",
+    hoverColor: "hover:from-red-400 hover:to-red-600",
+    bgColor: "bg-red-600",
+  },
+  // Add more platforms as needed
+]
+```
+
+### Adding Blog Content
+
+Configure the `blogData` array with your content:
+
+```typescript
+const blogData = [
+  {
+    id: 1,
+    title: "Your Blog Post Title",
+    description: "A compelling description of your content...",
+    videoId: "YouTube_VIDEO_ID",
+    thumbnail: "/images/your-thumbnail.png",
+    category: "Category Name",
+    duration: "10:30",
+  },
+]
+```
+
+## Accessibility Features
+
+The project demonstrates exemplary attention to accessibility standards:
+
+- **Semantic HTML structure** throughout the codebase
+- **ARIA labels** on all interactive elements
+- **Keyboard navigation** support
+- **Screen reader compatibility**
+- **Skip to main content** link for keyboard users
+- **Reduced motion preferences** respected via CSS media queries
+- **High contrast mode** support for users with visual impairments
+
+```css
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+```
+
+> **Accessibility Tip:** Always test your customised version with screen readers and keyboard-only navigation to ensure all users can access your content effectively.
+
+## Deployment Options
+
+### Vercel (Recommended)
+
+Vercel provides the optimal deployment experience for Next.js applications:
+
+1. Push your code to GitHub
+2. Connect your repository to [Vercel](https://vercel.com)
+3. Configure environment variables in the dashboard
+4. Deploy automatically with zero configuration
+
+Analytics and Speed Insights are enabled automatically upon deployment.
+
+### Alternative Platforms
+
+- **Netlify**: Build command `npm run build`, publish directory `.next`
+- **Railway**: Native Next.js support
+- **DigitalOcean**: App Platform with Node.js configuration
+
+## Available Scripts
+
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start development server |
+| `npm run build` | Build for production |
+| `npm run start` | Start production server |
+| `npm run lint` | Run ESLint checks |
+| `npm run type-check` | Run TypeScript checks |
+| `npm run format` | Format code with Prettier |
+| `npm run format:check` | Check code formatting |
+
+## Licensing Considerations
+
+The Link in Bio project operates under a **Custom License** with specific terms:
+
+**Permitted:**
+- Free use, modification, and distribution
+- Personal and non-commercial applications
+
+**Restricted:**
+- Commercial use or resale requires explicit author permission
+- Author credits must remain intact in the source code
+- Original authorship claims are prohibited
+
+> **Caution:** Before using this project for commercial purposes, ensure you have obtained proper authorisation from the author. Contact [nayanchandradas@hotmail.com](mailto:nayanchandradas@hotmail.com) for licensing enquiries.
+
+## Conclusion
+
+The Link in Bio project exemplifies the possibilities of modern web development when combining Next.js 14, React, and thoughtful design principles. Whether you are a content creator seeking to consolidate your online presence or a developer looking to create an impressive portfolio, this project provides a solid foundation that balances aesthetic appeal with technical excellence.
+
+The combination of glassmorphism design, comprehensive social integration, and performance-focused architecture ensures that your digital presence will leave a lasting impression on visitors whilst maintaining exceptional loading speeds and accessibility standards.
+
+---
+
+**Project Repository:** [github.com/nayandas69/linkinbio-nextjs](https://github.com/nayandas69/linkinbio-nextjs)
+
+**Author:** Nayan Das
+- GitHub: [@nayandas69](https://github.com/nayandas69)
+- YouTube: [@dasnayan69](https://youtube.com/@dasnayan69)
+- Email: [nayanchandradas@hotmail.com](mailto:nayanchandradas@hotmail.com)
