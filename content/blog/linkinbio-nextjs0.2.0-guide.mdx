@@ -1,0 +1,299 @@
+---
+title: "Link in Bio v0.2.0: Dynamic Blog Integration with Blogverse API"
+description: "Discover the new Link in Bio v0.2.0 release featuring seamless Blogverse API integration. Learn how the blog carousel now dynamically fetches and displays your latest blog posts in real-time without any hardcoding."
+date: "2026-02-03"
+tags: ["Blogverse", "Link in Bio", "API", "Next.js"]
+cover: "/images/linkinbio-nextjs-v0.2.0.png"
+---
+
+# Link in Bio v0.2.0: Dynamic Blog Integration with Blogverse API
+
+We're thrilled to announce the release of **Link in Bio v0.2.0**, a significant update that transforms how your blog content is displayed in your portfolio. This version introduces seamless **Blogverse API integration**, eliminating the need for hardcoded blog data and bringing your content to life automatically.
+
+## What's New in v0.2.0
+
+### Live Blog Integration via API
+
+The most impactful feature in this release is the integration of the **Blogverse API**. Your Link in Bio portfolio now fetches your latest blog posts directly from your Blogverse instance in real-time.
+
+**API Endpoint:**
+```
+https://blogverse-five-omega.vercel.app/api/v1/posts/recent?limit=5
+```
+
+This means:
+- **No more hardcoding** blog post information
+- **Automatic updates** whenever you publish new content on Blogverse
+- **Live carousel** that reflects your current blog posts
+- **Zero configuration** required after setup
+
+> **Why This Matters:** Previously, every time you published a new blog post, you had to manually update the `blogData` array in `app/page.tsx`. Now, that process is completely automated. Your portfolio instantly reflects your latest content.
+
+### How It Works
+
+The updated carousel component now:
+
+1. **Fetches data** from your Blogverse instance on component mount
+2. **Transforms the response** to match the carousel's internal structure
+3. **Renders posts dynamically** with proper styling and animations
+4. **Handles errors gracefully** with fallback messaging
+5. **Displays real blog thumbnails** when available, skips images for blogs without covers
+
+**Behind the Scenes:**
+
+```typescript
+useEffect(() => {
+  const fetchBlogs = async () => {
+    try {
+      const response = await fetch(
+        "https://blogverse-five-omega.vercel.app/api/v1/posts/recent?limit=5"
+      )
+      const data = await response.json()
+      
+      // Transform API data to carousel format
+      const transformedBlogs = data.map((post, index) => ({
+        id: index + 1,
+        title: post.frontmatter?.title || "Untitled",
+        description: post.frontmatter?.description || post.excerpt || "",
+        slug: post.slug,
+        thumbnail: post.frontmatter?.cover || null,
+        category: post.frontmatter?.tags?.[0] || "General",
+        duration: calculateDuration(post.readingTime),
+      }))
+      
+      setBlogs(transformedBlogs)
+    } catch (error) {
+      console.error("Error fetching blogs:", error)
+    }
+  }
+  
+  fetchBlogs()
+}, [])
+```
+
+## Data Structure
+
+The Blogverse API returns rich post data that the carousel intelligently processes:
+
+```typescript
+{
+  slug: "your-blog-post-slug",
+  frontmatter: {
+    title: "Your Blog Post Title",
+    description: "Compelling description of your post",
+    date: "2026-02-03",
+    tags: ["Category", "Tags"],
+    cover: "https://yoursite.com/images/cover.jpg"
+  },
+  excerpt: "Short excerpt of the post...",
+  readingTime: 300, // in seconds
+  content: "Full markdown content..."
+}
+```
+
+## Updated Features in the Carousel
+
+### Conditional Thumbnail Rendering
+
+v0.2.0 includes intelligent thumbnail handling:
+
+- **Shows thumbnails** only when blog posts have a `cover` image from Blogverse
+- **Skips images** for blogs without cover images to maintain clean UI
+- **Displays badges** for category and reading duration
+- **Smooth hover effects** with play button overlays
+- **Responsive sizing** across all device types
+
+### Direct Blog Navigation
+
+Clicking on a blog post now:
+- Opens the full blog post in a new tab
+- Links directly to `https://blogverse-five-omega.vercel.app/blog/{slug}`
+- Removes the modal popup for cleaner user experience
+- Maintains carousel auto-play functionality
+
+### Carousel Enhancements
+
+The carousel maintains all beloved features while adding new capabilities:
+
+- **Auto-advancing slides** every 5 seconds
+- **Manual navigation** with previous/next buttons
+- **Touch/swipe gestures** on mobile devices
+- **Dot indicators** for quick navigation
+- **Dynamic dot count** based on fetched posts
+- **Smooth animations** with Framer Motion
+
+## Installation & Migration
+
+### Upgrading from v0.1.0
+
+If you're upgrading from the previous version:
+
+1. **Pull the latest changes**
+   ```bash
+   git pull origin main
+   ```
+
+2. **Or checkout the new version**
+   ```bash
+   git checkout v0.2.0
+   ```
+
+3. **Install dependencies** (no new dependencies required)
+   ```bash
+   npm install
+   ```
+
+4. **Update your Blogverse URL** in `app/page.tsx` if your instance URL differs:
+   ```typescript
+   const response = await fetch(
+     "https://your-blogverse-instance.com/api/v1/posts/recent?limit=5"
+   )
+   ```
+
+5. **Restart development server**
+   ```bash
+   npm run dev
+   ```
+
+### Using v0.1.0 (Hardcoded Blogs)
+
+If you prefer the hardcoded approach:
+
+- **Checkout the release tag:** `git checkout v0.1.0`
+- **View the release:** [v0.1.0 Release](https://github.com/nayandas69/linkinbio-nextjs/releases/tag/v0.1.0)
+- **Manual blog updates:** Edit the `blogData` array in `app/page.tsx`
+
+## Configuration Options
+
+### Customising the Blog API
+
+You can modify the API request to fetch different numbers of posts:
+
+```typescript
+// Fetch 10 most recent blogs instead of 5
+const response = await fetch(
+  "https://blogverse-five-omega.vercel.app/api/v1/posts/recent?limit=10"
+)
+
+// Fetch posts by specific tag
+const response = await fetch(
+  "https://blogverse-five-omega.vercel.app/api/v1/posts/tag/Next.js"
+)
+```
+
+### Environment Variables
+
+For custom Blogverse instances, add to `.env.local`:
+
+```env
+NEXT_PUBLIC_BLOGVERSE_URL=https://your-blogverse-instance.com
+NEXT_PUBLIC_BLOG_LIMIT=5
+```
+
+Then update the fetch call:
+
+```typescript
+const BLOGVERSE_URL = process.env.NEXT_PUBLIC_BLOGVERSE_URL || 
+  "https://blogverse-five-omega.vercel.app"
+const BLOG_LIMIT = process.env.NEXT_PUBLIC_BLOG_LIMIT || 5
+
+const response = await fetch(
+  `${BLOGVERSE_URL}/api/v1/posts/recent?limit=${BLOG_LIMIT}`
+)
+```
+
+## Technical Improvements
+
+### Performance Optimisations
+
+- **Lazy loading** of blog data after component mount
+- **Image optimization** with Next.js Image component
+- **Efficient re-renders** with proper dependency arrays
+- **Error boundaries** for graceful failure handling
+
+### Error Handling
+
+The carousel includes robust error handling:
+
+```typescript
+try {
+  // Fetch and process blogs
+} catch (error) {
+  console.error("Error fetching blogs:", error)
+  setBlogs([]) // Empty state handled gracefully
+} finally {
+  setIsLoadingBlogs(false)
+}
+```
+
+### Type Safety
+
+Full TypeScript support ensures type-safe API integration:
+
+```typescript
+interface BlogPost {
+  id: number
+  title: string
+  description: string
+  slug: string
+  thumbnail: string | null
+  category: string
+  duration: string
+}
+```
+
+## Breaking Changes
+
+⚠️ **Important:** If you're upgrading from v0.1.0, note these changes:
+
+- **Modal removed:** Blogs no longer open in a modal popup
+- **Blog navigation:** Clicking posts opens them in a new tab to Blogverse
+- **Data source:** Carousel now fetches from API instead of local `blogData`
+- **Configuration:** No need to update `blogData` array anymore
+
+## Blogverse Repository
+
+This release tightly integrates with the Blogverse project. For more information:
+
+- **Repository:** [blogverse](https://github.com/nayandas69/blogverse)
+- **Blogverse API Documentation:** Check the Blogverse repository for complete API reference
+- **Deploy Your Own:** Host your own Blogverse instance and customize the blog carousel
+
+## Future Roadmap
+
+We have exciting plans for upcoming releases:
+
+- **Blog search functionality** in the carousel
+- **Category filtering** to display specific blog types
+- **Pagination support** for displaying more than recent 5 posts
+- **Caching optimization** to reduce API calls
+- **Blog statistics** from Blogverse analytics
+- **Custom carousel themes** and styling options
+
+## Community Feedback
+
+We'd love to hear your thoughts on v0.2.0! Share your feedback:
+
+- **GitHub Issues:** [Report bugs or suggest features](https://github.com/nayandas69/linkinbio-nextjs/issues)
+- **Discussions:** [Join the community conversation](https://github.com/nayandas69/linkinbio-nextjs/discussions)
+- **Twitter:** [@dasnayan69](https://twitter.com/dasnayan69)
+
+## Conclusion
+
+Link in Bio v0.2.0 represents a significant step forward in creating truly dynamic, content-driven portfolios. By seamlessly integrating with Blogverse API, your Link in Bio portfolio now becomes a live extension of your blogging platform.
+
+No more manual updates. No more forgotten blog posts. Just pure, dynamic content that reflects your latest work in real-time.
+
+Upgrade today and experience the power of truly connected content platforms!
+
+---
+
+**Project Links:**
+- **Link in Bio:** [linkinbio-nextjs](https://github.com/nayandas69/linkinbio-nextjs)
+- **Blogverse:** [blogverse](https://github.com/nayandas69/blogverse)
+- **Live Demo:** [linkinbio](https://linkinbio-nextjs-ashen.vercel.app)
+
+**Author:** Nayan Das
+- GitHub: [@nayandas69](https://github.com/nayandas69)
+- YouTube: [@dasnayan69](https://youtube.com/@dasnayan69)
+- Email: [nayanchandradas@hotmail.com](mailto:nayanchandradas@hotmail.com)
