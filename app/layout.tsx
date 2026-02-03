@@ -40,6 +40,7 @@ const calSans = localFont({
 
 // Site metadata for SEO
 export const metadata: Metadata = {
+  metadataBase: new URL('https://blogverse-five-omega.vercel.app'),
   title: {
     default: 'Nayan Das - Blog',
     template: '%s | Nayan Das',
@@ -65,7 +66,7 @@ export const metadata: Metadata = {
       'application/rss+xml': '/rss.xml',
     },
   },
-    icons: {
+  icons: {
     icon: '/icon.png',
   },
 }
