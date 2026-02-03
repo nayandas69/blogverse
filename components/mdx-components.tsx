@@ -16,6 +16,7 @@ import Link from "next/link"
 import type { ComponentProps } from "react"
 import { cn } from "@/lib/utils"
 import { CodeBlock } from "./code-block"
+import { AlertCircle, CheckCircle, AlertTriangle, Info as LucideInfo, Lightbulb, Zap, HelpCircle, AlertOctagon } from "lucide-react"
 
 /**
  * YouTube Embed Component
@@ -85,6 +86,132 @@ export function Callout({
   return (
     <div className={cn("my-6 rounded-xl border-l-4 p-4", styles[type])}>
       {children}
+    </div>
+  )
+}
+
+/**
+ * Note Component - [!NOTE] tag
+ */
+export function Note({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="my-6 rounded-lg border-l-4 border-blue-500 bg-blue-50 p-4 flex gap-3">
+      <LucideInfo className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+      <div className="text-blue-900 text-sm leading-relaxed">
+        {children}
+      </div>
+    </div>
+  )
+}
+
+/**
+ * Tip Component - [!TIP] tag
+ */
+export function Tip({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="my-6 rounded-lg border-l-4 border-yellow-500 bg-yellow-50 p-4 flex gap-3">
+      <Lightbulb className="h-5 w-5 text-yellow-600 flex-shrink-0 mt-0.5" />
+      <div className="text-yellow-900 text-sm leading-relaxed">
+        {children}
+      </div>
+    </div>
+  )
+}
+
+/**
+ * Important Component - [!IMPORTANT] tag
+ */
+export function Important({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="my-6 rounded-lg border-l-4 border-purple-500 bg-purple-50 p-4 flex gap-3">
+      <Zap className="h-5 w-5 text-purple-600 flex-shrink-0 mt-0.5" />
+      <div className="text-purple-900 text-sm leading-relaxed">
+        {children}
+      </div>
+    </div>
+  )
+}
+
+/**
+ * Caution Component - [!CAUTION] tag
+ */
+export function Caution({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="my-6 rounded-lg border-l-4 border-orange-500 bg-orange-50 p-4 flex gap-3">
+      <AlertTriangle className="h-5 w-5 text-orange-600 flex-shrink-0 mt-0.5" />
+      <div className="text-orange-900 text-sm leading-relaxed">
+        {children}
+      </div>
+    </div>
+  )
+}
+
+/**
+ * Warning Component - [!WARNING] tag
+ */
+export function Warning({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="my-6 rounded-lg border-l-4 border-red-500 bg-red-50 p-4 flex gap-3">
+      <AlertCircle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
+      <div className="text-red-900 text-sm leading-relaxed">
+        {children}
+      </div>
+    </div>
+  )
+}
+
+/**
+ * Question Component - [!QUESTION] tag
+ */
+export function Question({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="my-6 rounded-lg border-l-4 border-cyan-500 bg-cyan-50 p-4 flex gap-3">
+      <HelpCircle className="h-5 w-5 text-cyan-600 flex-shrink-0 mt-0.5" />
+      <div className="text-cyan-900 text-sm leading-relaxed">
+        {children}
+      </div>
+    </div>
+  )
+}
+
+/**
+ * Success Component - [!SUCCESS] tag
+ */
+export function Success({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="my-6 rounded-lg border-l-4 border-green-500 bg-green-50 p-4 flex gap-3">
+      <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+      <div className="text-green-900 text-sm leading-relaxed">
+        {children}
+      </div>
+    </div>
+  )
+}
+
+/**
+ * Danger Component - [!DANGER] tag
+ */
+export function Danger({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="my-6 rounded-lg border-l-4 border-red-700 bg-red-50 p-4 flex gap-3">
+      <AlertOctagon className="h-5 w-5 text-red-700 flex-shrink-0 mt-0.5" />
+      <div className="text-red-900 text-sm leading-relaxed">
+        {children}
+      </div>
+    </div>
+  )
+}
+
+/**
+ * Info Component - [!INFO] tag
+ */
+export function Info({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="my-6 rounded-lg border-l-4 border-sky-400 bg-sky-50 p-4 flex gap-3">
+      <LucideInfo className="h-5 w-5 text-sky-600 flex-shrink-0 mt-0.5" />
+      <div className="text-sky-800 text-sm leading-relaxed">
+        {children}
+      </div>
     </div>
   )
 }
@@ -161,6 +288,15 @@ export const mdxComponents = {
   YouTube,
   Video,
   Callout,
+  Note,
+  Tip,
+  Important,
+  Caution,
+  Warning,
+  Question,
+  Success,
+  Danger,
+  Info,
   ImageWithCaption,
 
   a: CustomLink,

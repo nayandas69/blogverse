@@ -92,7 +92,8 @@ export function getPostBySlug(slug: string): Post | null {
 
 /**
  * Get all posts with metadata (for listing pages)
- * Sorted by date in descending order (newest first)
+ * Sorted by updated date (if exists) or date in descending order (newest first)
+ * This ensures edited posts show as latest
  */
 export function getAllPosts(): PostMeta[] {
   const slugs = getAllPostSlugs()
@@ -108,9 +109,11 @@ export function getAllPosts(): PostMeta[] {
       }
     })
     .filter((post): post is PostMeta => post !== null)
-    // Sort by date descending
+    // Sort by updated date (if exists) or creation date, descending (newest first)
     .sort((a, b) => {
-      return new Date(b.frontmatter.date).getTime() - new Date(a.frontmatter.date).getTime()
+      const dateA = a.frontmatter.updated || a.frontmatter.date
+      const dateB = b.frontmatter.updated || b.frontmatter.date
+      return new Date(dateB).getTime() - new Date(dateA).getTime()
     })
 
   return posts
