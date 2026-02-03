@@ -22,6 +22,7 @@ import { ArrowRight, Calendar } from "lucide-react"
 interface PostFrontmatter {
   title: string
   date: string
+  updated?: string
   description: string
   tags: string[]
   cover?: string
@@ -49,7 +50,9 @@ interface BlogCardProps {
 
 export function BlogCard({ post, featured = false }: BlogCardProps) {
   const { slug, frontmatter } = post
-  const { title, date, description, tags, cover } = frontmatter
+  const { title, date, updated, description, tags, cover } = frontmatter
+  // Show updated date if it exists, otherwise show creation date
+  const displayDate = updated || date
 
   return (
     <article
@@ -109,8 +112,8 @@ export function BlogCard({ post, featured = false }: BlogCardProps) {
         {/* Date */}
         <div className="flex items-center gap-1.5 mt-2 text-xs text-gray-400">
           <Calendar size={12} />
-          <time dateTime={date}>
-            {formatDate(date)}
+          <time dateTime={displayDate}>
+            {formatDate(displayDate)}
           </time>
         </div>
 
