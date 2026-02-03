@@ -1,8 +1,10 @@
 ---
 title: "BlogVerse Complete Guide to This Blog"
 date: "2026-01-30"
+updated: "2026-02-03"
 description: "Complete guide explaining how BlogVerse was built, how it works under the hood, and how you can use it to create your own stunning blog."
 tags: ["nextjs", "mdx", "tailwind", "tutorial", "open-source"]
+cover: "/images/blogverse.png"
 ---
 
 # Building BlogVerse: A Complete Guide
@@ -225,6 +227,487 @@ Supported languages include: `javascript`, `typescript`, `jsx`, `tsx`, `css`, `h
 > or to highlight important information.
 ```
 
+## Alert Components (GitHub-Style)
+
+BlogVerse includes 9 custom alert components with automatic icons and color coding. These are perfect for highlighting important information, tips, warnings, and more throughout your posts.
+
+### Available Alert Types
+
+All alert components have a consistent format with an icon, left border, colored background, and proper text hierarchy.
+
+#### Note Component - [!NOTE]
+
+Use this for general information and helpful context.
+
+```mdx
+<Note>
+This is important context that readers should know about the topic.
+</Note>
+```
+
+## Examples Look
+<Note>
+This example highlights the use of the Note component for general information.
+</Note>
+
+**Icon:** Info Circle (Blue)
+
+#### Tip Component - [!TIP]
+
+Use this for helpful hints and best practices.
+
+```mdx
+<Tip>
+You can optimize your MDX content by reusing components across multiple posts.
+</Tip>
+```
+
+## Examples Look
+<Tip>
+This example demonstrates the Tip component for sharing useful advice.
+</Tip>
+
+**Icon:** Lightbulb (Yellow)
+
+#### Important Component - [!IMPORTANT]
+
+Use this for critical instructions and key requirements.
+
+```mdx
+<Important>
+Always run \`npm install\` after cloning the repository to ensure all dependencies are installed.
+</Important>
+```
+
+## Examples Look
+<Important>
+This example showcases the Important component for emphasizing crucial information.
+</Important>
+
+**Icon:** Zap/Lightning (Purple)
+
+#### Caution Component - [!CAUTION]
+
+Use this for warnings about potential issues or side effects.
+
+```mdx
+<Caution>
+Modifying the build configuration can break your application if done incorrectly.
+</Caution>
+```
+
+## Examples Look
+<Caution>
+This example illustrates the Caution component for alerting readers to potential problems.
+</Caution>
+
+**Icon:** Alert Triangle (Orange)
+
+#### Warning Component - [!WARNING]
+
+Use this for significant warnings about risks and dangers.
+
+```mdx
+<Warning>
+Never commit sensitive data like API keys to version control. Use environment variables instead.
+</Warning>
+```
+
+## Examples Look
+<Warning>
+This example highlights the Warning component for serious alerts.
+</Warning>
+
+**Icon:** Alert Circle (Red)
+
+#### Question Component - [!QUESTION]
+
+Use this to prompt readers with questions or thought exercises.
+
+```mdx
+<Question>
+How would you implement this feature differently using React hooks instead of server components?
+</Question>
+```
+
+## Examples Look
+<Question>
+This example demonstrates the Question component for engaging readers with prompts.
+</Question>
+
+**Icon:** Help Circle (Cyan)
+
+#### Success Component - [!SUCCESS]
+
+Use this to highlight positive outcomes and completed tasks.
+
+```mdx
+<Success>
+Your blog is now live and accessible to the world! Congratulations on your deployment.
+</Success>
+```
+
+## Examples Look
+<Success>
+This example showcases the Success component for celebrating achievements.
+</Success>
+
+**Icon:** Check Circle (Green)
+
+#### Danger Component - [!DANGER]
+
+Use this for critical alerts and dangerous operations.
+
+```mdx
+<Danger>
+This action will permanently delete all your blog posts. This operation cannot be undone.
+</Danger>
+```
+
+## Examples Look
+<Danger>
+This example illustrates the Danger component for urgent warnings.
+</Danger>
+
+**Icon:** Alert Octagon (Dark Red)
+
+#### Info Component - [!INFO]
+
+Use this for general informational blocks (alternative to Note).
+
+```mdx
+<Info>
+The FaceNet512 model weights are automatically downloaded on first use (~90MB).
+</Info>
+```
+
+## Examples Look
+<Info>
+This example demonstrates the Info component for sharing informational content.
+</Info>
+
+**Icon:** Info Circle (Light Blue)
+
+### Alert Component Reference Table
+
+| Component | Icon | Color | Use Case |
+|-----------|------|-------|----------|
+| `<Note>` | Info Circle | Blue | General information |
+| `<Tip>` | Lightbulb | Yellow | Helpful hints |
+| `<Important>` | Zap | Purple | Critical instructions |
+| `<Caution>` | Alert Triangle | Orange | Potential issues |
+| `<Warning>` | Alert Circle | Red | Risk warnings |
+| `<Question>` | Help Circle | Cyan | Questions/exercises |
+| `<Success>` | Check Circle | Green | Positive outcomes |
+| `<Danger>` | Alert Octagon | Dark Red | Critical alerts |
+| `<Info>` | Info Circle | Light Blue | Informational blocks |
+
+## API Documentation
+
+BlogVerse includes a comprehensive REST API for programmatically accessing your blog content. The API is located at `/api/v1` and provides multiple endpoints for fetching posts, tags, and statistics.
+
+### API Base URL
+
+```
+https://blogverse-five-omega.vercel.app/api/v1
+```
+
+### Authentication
+
+No authentication is required. The API is public and CORS-enabled for cross-origin requests.
+
+### Response Format
+
+All successful responses follow this format:
+
+```json
+{
+  "success": true,
+  "data": {},
+  "message": "Success message",
+  "timestamp": "2026-01-30T12:00:00Z"
+}
+```
+
+Error responses:
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": 400,
+    "message": "Error message",
+    "details": "Additional error details"
+  },
+  "timestamp": "2026-01-30T12:00:00Z"
+}
+```
+
+### Endpoints
+
+#### Get All Posts
+
+Retrieve all blog posts with pagination support.
+
+```bash
+GET /api/v1/posts?page=1&limit=10
+```
+
+**Query Parameters:**
+- `page` (optional) - Page number (default: 1)
+- `limit` (optional) - Posts per page (default: 10, max: 100)
+
+**Example Request:**
+
+```javascript
+fetch('https://blogverse-five-omega.vercel.app/api/v1/posts?page=1&limit=10')
+  .then(res => res.json())
+  .then(data => console.log(data.data.posts))
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "data": {
+    "posts": [
+      {
+        "slug": "hello-world",
+        "frontmatter": {
+          "title": "Hello World",
+          "date": "2026-01-30",
+          "description": "My first blog post",
+          "tags": ["tutorial"]
+        },
+        "excerpt": "My first blog post...",
+        "readingTime": 5
+      }
+    ],
+    "pagination": {
+      "currentPage": 1,
+      "pageSize": 10,
+      "totalPages": 2,
+      "totalPosts": 15,
+      "hasNextPage": true,
+      "hasPreviousPage": false
+    }
+  }
+}
+```
+
+#### Get Recent Posts
+
+Retrieve the most recent blog posts.
+
+```bash
+GET /api/v1/posts/recent?limit=5
+```
+
+**Query Parameters:**
+- `limit` (optional) - Number of recent posts (default: 5, max: 50)
+
+**Example Request:**
+
+```javascript
+fetch('https://blogverse-five-omega.vercel.app/api/v1/posts/recent?limit=5')
+  .then(res => res.json())
+  .then(data => console.log(data.data))
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "slug": "latest-post",
+      "frontmatter": {
+        "title": "Latest Post",
+        "date": "2026-01-30",
+        "description": "My newest blog post"
+      },
+      "excerpt": "Latest post content...",
+      "readingTime": 8
+    }
+  ]
+}
+```
+
+#### Get Post by Slug
+
+Retrieve a specific post with full content.
+
+```bash
+GET /api/v1/posts/:slug
+```
+
+**Example Request:**
+
+```javascript
+fetch('https://blogverse-five-omega.vercel.app/api/v1/posts/hello-world')
+  .then(res => res.json())
+  .then(data => console.log(data.data))
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "data": {
+    "slug": "hello-world",
+    "frontmatter": {
+      "title": "Hello World",
+      "date": "2026-01-30",
+      "description": "My first blog post",
+      "tags": ["tutorial"],
+      "cover": "/images/cover.png"
+    },
+    "content": "# Hello World\n\nThis is my first post...",
+    "excerpt": "My first blog post...",
+    "readingTime": 5
+  }
+}
+```
+
+#### Get Posts by Tag
+
+Retrieve posts filtered by a specific tag with pagination.
+
+```bash
+GET /api/v1/posts/tag/:tag?page=1&limit=10
+```
+
+**Query Parameters:**
+- `page` (optional) - Page number (default: 1)
+- `limit` (optional) - Posts per page (default: 10, max: 100)
+
+**Example Request:**
+
+```javascript
+fetch('https://blogverse-five-omega.vercel.app/api/v1/posts/tag/react?page=1&limit=10')
+  .then(res => res.json())
+  .then(data => console.log(data.data.posts))
+```
+
+#### Get All Tags
+
+Retrieve all available tags across your blog.
+
+```bash
+GET /api/v1/tags?count=true
+```
+
+**Query Parameters:**
+- `count` (optional) - Include post count per tag (true/false, default: false)
+
+**Example Request:**
+
+```javascript
+fetch('https://blogverse-five-omega.vercel.app/api/v1/tags?count=true')
+  .then(res => res.json())
+  .then(data => console.log(data.data.tags))
+```
+
+**Response with counts:**
+
+```json
+{
+  "success": true,
+  "data": {
+    "tags": [
+      { "name": "react", "count": 5 },
+      { "name": "nextjs", "count": 8 },
+      { "name": "tutorial", "count": 3 }
+    ],
+    "total": 3
+  }
+}
+```
+
+#### Get Blog Statistics
+
+Retrieve overall statistics about your blog.
+
+```bash
+GET /api/v1/stats
+```
+
+**Example Request:**
+
+```javascript
+fetch('https://blogverse-five-omega.vercel.app/api/v1/stats')
+  .then(res => res.json())
+  .then(data => console.log(data.data))
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "data": {
+    "totalPosts": 15,
+    "totalTags": 8,
+    "totalReadingTime": 120,
+    "averageReadingTime": 8
+  }
+}
+```
+
+### Usage Examples
+
+#### Building a Blog Homepage
+
+```typescript
+// Fetch 5 recent posts for homepage
+const response = await fetch('https://blogverse-five-omega.vercel.app/api/v1/posts/recent?limit=5')
+const { data } = await response.json()
+
+// Display recent posts
+data.forEach(post => {
+  console.log(\`\${post.frontmatter.title} - \${post.readingTime} min read\`)
+})
+```
+
+#### Creating a Tag Archive Page
+
+```typescript
+// Get all tags with post counts
+const response = await fetch('https://blogverse-five-omega.vercel.app/api/v1/tags?count=true')
+const { data } = await response.json()
+
+// Display tags sorted by post count
+const sorted = data.tags.sort((a, b) => b.count - a.count)
+sorted.forEach(tag => {
+  console.log(\`\${tag.name} (\${tag.count} posts)\`)
+})
+```
+
+#### Integrating with Third-Party Services
+
+```typescript
+// Use API for external widgets or dashboards
+const stats = await fetch('https://blogverse-five-omega.vercel.app/api/v1/stats').then(r => r.json())
+
+// Display on dashboard
+console.log(\`Total posts: \${stats.data.totalPosts}\`)
+console.log(\`Average reading time: \${stats.data.averageReadingTime} minutes\`)
+```
+
+### Caching
+
+The API implements intelligent caching to optimize performance:
+
+- **Root endpoint** (`/api/v1`) - No cache (always fresh)
+- **Posts endpoint** (`/posts`) - Cached for 1 hour
+- **Recent posts** (`/posts/recent`) - Cached for 30 minutes
+- **Tags endpoint** (`/tags`) - Cached for 2 hours
+
+All responses include `Cache-Control` headers. For the best user experience, respect these headers in your client applications.
+
 ## Customisation
 
 ### Changing Site Information
@@ -245,11 +728,12 @@ The colour scheme is defined in `/app/globals.css` using CSS custom properties:
 
 ```css
 :root {
-  --background: oklch(0.98 0.01 350);
-  --foreground: oklch(0.20 0.02 350);
-  --primary: oklch(0.65 0.25 350);
-  --accent: oklch(0.55 0.20 350);
-  /* Additional variables... */
+  --Background: #FFF5F7;
+  --Surface: #FFFFFF;
+  --Text-main: #1A1A2E;
+  --Text-mute: #6B7280;
+  --Border: #F9D5E5;
+  --Accent: #EC4899;
 }
 ```
 
