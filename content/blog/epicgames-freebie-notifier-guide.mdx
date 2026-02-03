@@ -13,7 +13,9 @@ In the competitive landscape of digital gaming distribution, Epic Games Store ha
 
 The impetus behind this project stems from a universal frustration: discovering that a coveted game was offered free the previous week, only to find the promotion has concluded. Rather than relying upon memory or manually checking the Epic Games Store, this tool transforms the passive act of monitoring into an automated, instantaneous notification system.
 
-> **Information:** If you simply wish to receive notifications without the technical setup, you can join the developer's [Discord server](https://discord.gg/u9XfHZN8K9) and receive alerts automatically.
+<Important>
+If you simply wish to receive notifications without the technical setup, you can join the developer's [Discord server](https://discord.gg/u9XfHZN8K9) and receive alerts automatically.
+</Important>
 
 ## Core Functionality
 
@@ -89,7 +91,9 @@ echo "DISCORD_WEBHOOK=your_webhook_url_here" > .env
 python main.py
 ```
 
-> **Caution:** Never commit your `.env` file to version control. The Discord webhook URL grants full posting access to your channel and should be treated as a sensitive credential.
+<Caution>
+Never commit your `.env` file to version control. The Discord webhook URL grants full posting access to your channel and should be treated as a sensitive credential.
+</Caution>
 
 ### Method Two: GitHub Actions (Recommended)
 
@@ -117,7 +121,9 @@ The workflow requires a Personal Access Token (PAT) to commit tracking updates:
    - `workflow`
 3. Add this token as a repository secret named `PAT_TOKEN`
 
-> **Information:** The PAT_TOKEN enables the workflow to commit changes to the `epics.json` tracking file, ensuring persistent deduplication across executions.
+<Important>
+The PAT_TOKEN enables the workflow to commit changes to the `epics.json` tracking file, ensuring persistent deduplication across executions.
+</Important>
 
 ### Creating a Discord Webhook
 
@@ -129,7 +135,9 @@ For those unfamiliar with Discord webhooks:
 4. Configure the name and channel
 5. Copy the webhook URL
 
-> **Caution:** Ensure the webhook targets an appropriate channel. Notifications will be visible to all members with access to that channel.
+<Danger>
+Ensure the webhook targets an appropriate channel. Notifications will be visible to all members with access to that channel.
+</Danger>
 
 ## The GitHub Actions Workflow
 
@@ -210,7 +218,9 @@ schedule:
   - cron: '0 */6 * * *'  # Every 6 hours
 ```
 
-> **Information:** Epic Games typically releases new free games on Thursdays, though the schedule occasionally varies. Hourly checks ensure prompt notification whilst remaining respectful of API resources.
+<Info>
+Epic Games typically releases new free games on Thursdays, though the schedule occasionally varies. Hourly checks ensure prompt notification whilst remaining respectful of API resources.
+</Info>
 
 ### Mystery Game Filtering
 
