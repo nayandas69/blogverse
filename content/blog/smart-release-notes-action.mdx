@@ -1,0 +1,239 @@
+---
+title: "Automate Beautiful Release Notes with Smart Release Notes Action"
+date: "2026-02-11"
+description: "Automatically generate clean, categorized GitHub release notes from merged PRs and commits using Smart Release Notes Action."
+tags: ["github-actions", "automation", "release", "opensource"]
+cover: "/images/smart-release-notes-cover.png"
+---
+
+If you maintain an open-source project, you know how painful writing release notes can be.
+
+- Manually scanning merged PRs  
+- Grouping changes by type  
+- Formatting Markdown  
+- Making sure nothing is missed  
+
+It’s repetitive. It’s error-prone. And honestly — it slows you down.
+
+So I built **[Smart Release Notes Action](https://github.com/nayandas69/smart-release-notes-action)** — a GitHub Action that automatically generates clean, categorized release notes from your merged PRs and commits.
+
+---
+
+## What Problem Does It Solve?
+
+Most teams either:
+
+- Forget to write proper release notes
+- Copy/paste PR titles manually
+- Use auto-generated notes that lack structure
+- Or maintain custom scripts that break over time
+
+<Note>
+Smart Release Notes Action automatically detects tag pushes, collects merged PRs and commits between tags, categorizes them, and outputs ready-to-publish Markdown.
+</Note>
+
+---
+
+## Features
+
+- 🔖 Automatic tag detection (`v1.0.0`, `v1.1.0`, etc.)
+- 🔀 Collect merged PRs between two tags
+- 🏷️ Label-based categorization
+- 🧩 Commit fallback when PRs aren’t available
+- ⚙️ Custom JSON configuration for categories
+- 📝 Clean Markdown output for GitHub Releases
+
+<Success>
+No more manual release writing. Just push a tag and your release notes are generated automatically.
+</Success>
+
+---
+
+## Quick Setup
+
+Create `.github/workflows/release-notes.yml`:
+
+```yaml
+name: Release Notes
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate Release Notes
+        id: notes
+        uses: nayandas69/smart-release-notes-action@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          body: ${{ steps.notes.outputs.changelog }}
+````
+
+Now just push a tag:
+
+```bash
+git tag -a v1.2.0 -m "Release v1.2.0"
+git push origin v1.2.0
+```
+
+Done 🎉
+
+---
+
+## Release Modes
+
+You can choose how data is collected:
+
+### PR Mode
+
+Only uses merged pull requests.
+
+### COMMIT Mode
+
+Uses commit messages (great with Conventional Commits).
+
+### HYBRID Mode (Default)
+
+Combines PRs and direct commits.
+
+<Tip>
+If your team strictly uses PRs with labels, `mode: PR` gives the cleanest output.
+</Tip>
+
+---
+
+## Custom Categories
+
+You can fully customize how changes are grouped.
+
+Create:
+
+```
+.github/release-config.json
+```
+
+Example:
+
+```json
+{
+  "categories": [
+    { "title": "🚀 Features", "labels": ["feature", "enhancement"] },
+    { "title": "🐛 Bug Fixes", "labels": ["bug", "fix"] },
+    { "title": "📚 Documentation", "labels": ["docs"] }
+  ],
+  "uncategorizedTitle": "Other Changes"
+}
+```
+
+<Important>
+PRs are matched to the first category whose labels intersect with the PR's labels.
+</Important>
+
+---
+
+## Example Output
+
+```markdown
+## 🚀 Features
+- Add dark mode support (#123)
+
+## 🐛 Bug Fixes
+- Fix authentication race condition (#124)
+
+## 📚 Documentation
+- Update installation guide (#125)
+```
+
+Clean. Structured. Ready for production.
+
+---
+
+## Best Practices
+
+* Use consistent PR labels (`feature`, `bug`, `docs`)
+* Follow semantic versioning (`v1.0.0`)
+* Use Conventional Commits for better commit parsing
+* Always fetch full git history (`fetch-depth: 0`)
+
+<Caution>
+If you don’t fetch full history, tag detection may fail.
+</Caution>
+
+---
+
+## Why I Built This
+
+As an open-source maintainer, I wanted:
+
+* Predictable release notes
+* Custom categories
+* Label-based structure
+* Zero manual work
+
+Most existing solutions were either too rigid or too generic.
+
+So I built something flexible, developer-friendly, and configurable.
+
+---
+
+## Real World Use Case
+
+Every time I push a version tag:
+
+```
+v1.3.0
+```
+
+The workflow:
+
+1. Detects the previous tag
+2. Collects merged PRs
+3. Categorizes them
+4. Generates Markdown
+5. Publishes a GitHub Release
+
+<Question>
+What if there are no PRs?
+</Question>
+
+It automatically falls back to commit-based generation.
+
+---
+
+## Lastly — Configuration Validation
+Release notes should:
+
+* Be automatic
+* Be structured
+* Be readable
+* Not waste your time
+
+Smart Release Notes Action makes that possible.
+
+<Success>
+If you’re building in public or maintaining an open-source project, this will save you hours over time.
+</Success>
+
+---
+
+## Check It Out and documentation are available on GitHub:
+
+👉 [smart-release-notes-action](https://github.com/nayandas69/smart-release-notes-action)
+
+If you find it useful, consider starring the repository — it helps a lot.
