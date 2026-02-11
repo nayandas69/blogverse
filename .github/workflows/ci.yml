@@ -26,9 +26,11 @@ jobs:
       - name: Check code formatting
         run: npm run format:check
 
-      # Optional: automatically format (not typical in CI)
-      # - name: Format code
-      #   run: npm run format
+      - name: Cache Next.js build
+        uses: actions/cache@v3
+        with:
+          path: .next/cache
+          key: nextjs-build-${{ github.sha }}
 
       - name: Build
         run: npm run build
