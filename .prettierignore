@@ -1,0 +1,24 @@
+# Ignore everything by default
+*
+
+# Format only app pages and styles, excluding API routes and RSS
+!app/**/*.ts
+!app/**/*.tsx
+!app/**/*.css
+!components/**/*.tsx
+!hooks/**/*.ts
+!lib/**/*.ts
+
+# Exclude API routes
+app/api/**/*.ts
+
+# Exclude RSS feed route
+app/rss.xml/route.ts
+
+# Exclude blog content
+content/blog/**/*.mdx
+
+# Ignore static files and build folders
+public/
+.next/
+node_modules/
