@@ -1,6 +1,14 @@
 /**
  * GET /api/v1/posts/[slug]
- * Get a specific post by slug with full content
+ * Get a specific post by slug with full content, metadata, and reading time
+ * 
+ * URL Parameters:
+ * - slug: The post identifier/slug (required)
+ * 
+ * Response includes:
+ * - Full frontmatter (title, date, description, tags, cover image, etc.)
+ * - Raw MDX content for client-side rendering
+ * - Calculated reading time estimate
  */
 
 import { NextRequest, NextResponse } from 'next/server'
@@ -15,7 +23,10 @@ import {
 
 export const dynamic = 'force-static'
 
-// Generate static params for all post slugs
+/**
+ * Generate static parameters for all post slugs to enable static generation
+ * This runs at build time to create routes for all existing posts
+ */
 export async function generateStaticParams() {
     const slugs = getAllPostSlugs()
     return slugs.map((slug) => ({ slug }))
@@ -26,9 +37,13 @@ export async function GET(
     { params }: { params: Promise<{ slug: string }> }
 ) {
     try {
+        // Extract the post slug from URL parameters
         const { slug } = await params
+        
+        // Attempt to retrieve the post using the provided slug
         const post = getPostBySlug(slug)
 
+        // Return 404 error if post doesn't exist
         if (!post) {
             return NextResponse.json(
                 formatApiError(404, `Post with slug "${slug}" not found`),
@@ -42,17 +57,17 @@ export async function GET(
             )
         }
 
-        // Calculate reading time
+        // Calculate estimated reading time based on word count
         const readingTime = calculateReadingTime(post.content)
 
-        // Prepare response with all requested formats
+        // Prepare comprehensive response with full post data
         const response = formatApiResponse(
             {
                 slug: post.slug,
                 frontmatter: post.frontmatter,
                 content: {
-                    mdx: post.content, // Raw MDX for client-side rendering
-                    readingTime,
+                    mdx: post.content, // Raw MDX content for client-side rendering
+                    readingTime, // Estimated reading time in minutes
                 },
             },
             `Retrieved full post: ${post.frontmatter.title}`
@@ -61,12 +76,15 @@ export async function GET(
         return NextResponse.json(response, {
             headers: {
                 ...getCORSHeaders(),
-                ...getCacheHeaders(86400), // Cache for 24 hours (individual posts change rarely)
+                ...getCacheHeaders(86400), // Cache for 24 hours - individual posts rarely change
                 'Content-Type': 'application/json',
             },
         })
     } catch (error) {
-        console.error('Error fetching post:', error)
+        // Log error with context for debugging
+        console.error('[API Error] Error fetching post:', error)
+        
+        // Return consistent error response format
         return NextResponse.json(
             formatApiError(500, 'Internal server error', error instanceof Error ? error.message : 'Unknown error'),
             {

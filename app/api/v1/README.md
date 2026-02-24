@@ -129,8 +129,7 @@ GET /api/v1/posts/recent?limit=5
       "excerpt": "In the contemporary landscape...",
       "readingTime": 6
     }
-  ],
-  "message": "Retrieved 5 recent posts"
+  ]
 }
 ```
 
@@ -162,16 +161,16 @@ GET /api/v1/posts/hello-world
       "description": "Welcome to my blog!",
       "tags": ["intro", "personal", "blogging"]
     },
-    "content": "# Hello World!\n\nWelcome to my blog...",
-    "html": "<h1>Hello World!</h1>\n<p>Welcome to my blog...</p>",
-    "excerpt": "Welcome to my blog! I'm Nayan Das...",
-    "readingTime": 1
+    "content": {
+      "mdx": "# Hello World!\n\nWelcome to my blog...",
+      "readingTime": 1
+    }
   }
 }
 ```
 
 > [!CAUTION]
-> The `content` field contains raw MDX. Use `html` for direct rendering or parse `content` with MDX libraries.
+> The `content.mdx` field contains raw MDX content. Use MDX libraries (like `@mdx-js/react`) on the client-side to render it properly.
 
 ---
 
@@ -577,10 +576,11 @@ app.listen(3000);
     "tags": ["string"] - Array of tags,
     "cover": "string (optional) - Cover image URL"
   },
-  "content": "string - Raw MDX content (when available)",
-  "html": "string - Rendered HTML (when available)",
-  "excerpt": "string - First 200 characters of content",
-  "readingTime": "number - Estimated reading time in minutes"
+  "content": {
+    "mdx": "string - Raw MDX content",
+    "readingTime": "number - Estimated reading time in minutes"
+  },
+  "excerpt": "string - First 200 characters of content"
 }
 ```
 
@@ -715,5 +715,5 @@ If you encounter issues:
 
 **Last Updated:** 2026-02-01
 **API Status:** Active
-**Response Time:** &lt;100ms globally
+**Response Time:** Sub-100ms globally
 **Uptime:** 99.95%

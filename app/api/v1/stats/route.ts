@@ -7,6 +7,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getAllPosts, getAllTags, getPostBySlug } from '@/lib/blog'
 import {
     formatApiResponse,
+    formatApiError,
     getCacheHeaders,
     getCORSHeaders,
     calculateReadingTime,
@@ -16,31 +17,34 @@ export const dynamic = 'force-static'
 
 export async function GET(request: NextRequest) {
     try {
+        // Retrieve all posts and tags from the blog system
         const allPosts = getAllPosts()
         const allTags = getAllTags()
 
-        // Calculate statistics
+        // Initialize statistics tracking variables
         let totalReadingTime = 0
         let avgReadingTime = 0
         const postsByYear: Record<string, number> = {}
 
+        // Iterate through all posts to calculate reading time and year distribution
         allPosts.forEach((post) => {
             const fullPost = getPostBySlug(post.slug)
             if (fullPost) {
                 const readingTime = calculateReadingTime(fullPost.content)
                 totalReadingTime += readingTime
 
-                // Count by year
+                // Track post count by publication year for distribution analysis
                 const year = new Date(post.frontmatter.date).getFullYear()
                 postsByYear[year] = (postsByYear[year] || 0) + 1
             }
         })
 
+        // Calculate average reading time only if there are posts
         if (allPosts.length > 0) {
             avgReadingTime = Math.round(totalReadingTime / allPosts.length)
         }
 
-        // Get earliest and latest post dates
+        // Extract earliest and latest post dates for blog timeline metrics
         let earliestDate = null
         let latestDate = null
 
@@ -49,7 +53,7 @@ export async function GET(request: NextRequest) {
             earliestDate = allPosts[allPosts.length - 1].frontmatter.date
         }
 
-        // Calculate tag statistics
+        // Calculate tag statistics - count posts per tag and get top 10 most used tags
         const topTags = allTags
             .map((tag) => ({
                 name: tag,
@@ -58,6 +62,7 @@ export async function GET(request: NextRequest) {
             .sort((a, b) => b.count - a.count)
             .slice(0, 10)
 
+        // Format comprehensive statistics response
         const response = formatApiResponse({
             blog: {
                 totalPosts: allPosts.length,
@@ -81,21 +86,17 @@ export async function GET(request: NextRequest) {
         return NextResponse.json(response, {
             headers: {
                 ...getCORSHeaders(),
-                ...getCacheHeaders(7200), // Cache for 2 hours
+                ...getCacheHeaders(7200), // Cache for 2 hours - stats don't change frequently
                 'Content-Type': 'application/json',
             },
         })
     } catch (error) {
-        console.error('Error fetching stats:', error)
+        // Log error with context for debugging
+        console.error('[API Error] Error fetching stats:', error)
+        
+        // Return consistent error response format using formatApiError helper
         return NextResponse.json(
-            {
-                success: false,
-                error: {
-                    code: 500,
-                    message: 'Internal server error',
-                    details: error instanceof Error ? error.message : 'Unknown error',
-                },
-            },
+            formatApiError(500, 'Internal server error', error instanceof Error ? error.message : 'Unknown error'),
             {
                 status: 500,
                 headers: {

@@ -24,24 +24,50 @@ export const dynamic = 'force-static'
 
 export async function GET(request: NextRequest) {
     try {
-        // Parse pagination params
+        // Parse and validate pagination parameters from query string
         const { searchParams } = new URL(request.url)
         const { page, limit } = parsePagination(
             searchParams.get('page'),
             searchParams.get('limit')
         )
 
-        // Get all posts
+        // Retrieve all blog posts from the system
         const allPosts = getAllPosts()
         const totalPosts = allPosts.length
 
-        // Calculate pagination
+        // Handle edge case: no posts available
+        if (totalPosts === 0) {
+            const response = formatApiResponse(
+                {
+                    posts: [],
+                    pagination: {
+                        currentPage: 1,
+                        pageSize: limit,
+                        totalPages: 0,
+                        totalPosts: 0,
+                        hasNextPage: false,
+                        hasPreviousPage: false,
+                    },
+                },
+                'No posts available'
+            )
+
+            return NextResponse.json(response, {
+                headers: {
+                    ...getCORSHeaders(),
+                    ...getCacheHeaders(3600),
+                    'Content-Type': 'application/json',
+                },
+            })
+        }
+
+        // Calculate pagination boundaries
         const totalPages = Math.ceil(totalPosts / limit)
         const startIndex = (page - 1) * limit
         const endIndex = startIndex + limit
 
-        // Validate page number
-        if (page > totalPages && totalPosts > 0) {
+        // Validate requested page number is within acceptable range
+        if (page > totalPages) {
             return NextResponse.json(
                 formatApiError(400, `Page ${page} does not exist. Total pages: ${totalPages}`),
                 {
@@ -54,10 +80,10 @@ export async function GET(request: NextRequest) {
             )
         }
 
-        // Get paginated posts
+        // Extract the paginated slice of posts from the full list
         const paginatedPosts = allPosts.slice(startIndex, endIndex)
 
-        // Enrich posts with reading time and excerpt
+        // Enrich each post with calculated reading time and excerpt for preview
         const enrichedPosts = paginatedPosts.map((post) => {
             const fullPost = getPostBySlug(post.slug)
             const readingTime = fullPost ? calculateReadingTime(fullPost.content) : 0
@@ -71,6 +97,7 @@ export async function GET(request: NextRequest) {
             }
         })
 
+        // Format response with pagination metadata
         const response = formatApiResponse(
             {
                 posts: enrichedPosts,
@@ -89,12 +116,15 @@ export async function GET(request: NextRequest) {
         return NextResponse.json(response, {
             headers: {
                 ...getCORSHeaders(),
-                ...getCacheHeaders(3600), // Cache for 1 hour
+                ...getCacheHeaders(3600), // Cache for 1 hour - posts update moderately
                 'Content-Type': 'application/json',
             },
         })
     } catch (error) {
-        console.error('Error fetching posts:', error)
+        // Log error with context for debugging and monitoring
+        console.error('[API Error] Error fetching posts:', error)
+        
+        // Return consistent error response format
         return NextResponse.json(
             formatApiError(500, 'Internal server error', error instanceof Error ? error.message : 'Unknown error'),
             {
