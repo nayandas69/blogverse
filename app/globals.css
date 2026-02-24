@@ -245,6 +245,30 @@
    Code Block Component Styling
    ============================================ */
 
+.code-block-wrapper {
+  background-color: #0f172a;
+  color: #e0e0e0;
+  font-family: var(--font-mono);
+  margin: 1.5rem 0;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.code-block-wrapper pre {
+  background-color: #0f172a !important;
+  color: #e0e0e0 !important;
+  border: none !important;
+  padding: 1rem !important;
+  margin: 0 !important;
+  overflow-x: auto;
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+.code-block-wrapper code {
+  font-family: var(--font-mono) !important;
+  background: transparent !important;
+}
+
 .code-block {
   background-color: #1a1a2e;
   color: #e0e0e0;

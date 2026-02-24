@@ -200,32 +200,43 @@ export function CodeBlock({ children, className, ...props }: ComponentProps<"pre
     }
 
     return (
-        <pre
-            className="code-block relative group"
-            {...props}
-        >
-            {/* Top bar with language and copy button */}
-            <div className="absolute top-2 right-2 flex items-center gap-2">
+        <div className="code-block-wrapper my-4 rounded-lg overflow-hidden border border-gray-800">
+            {/* Header with language and copy button */}
+            <div className="flex items-center justify-between bg-gray-900 px-4 py-3 border-b border-gray-800">
                 {language && (
-                    <span className="px-2 py-0.5 text-xs font-medium bg-pink-500/20 text-pink-300 rounded">
+                    <span className="text-xs font-semibold text-gray-400 uppercase tracking-wide">
                         {language}
                     </span>
                 )}
+                {!language && <div />}
                 <button
                     onClick={handleCopy}
-                    className="p-1.5 rounded bg-gray-700/50 hover:bg-gray-600/50 text-gray-400 hover:text-gray-200 transition-colors"
+                    className="flex items-center gap-2 p-2 rounded-md bg-gray-800/60 hover:bg-gray-700/60 text-gray-400 hover:text-gray-200 transition-colors duration-200"
                     aria-label={copied ? "Copied!" : "Copy code"}
+                    title={copied ? "Copied!" : "Copy code"}
                 >
                     {copied ? (
-                        <Check className="w-4 h-4 text-green-400" />
+                        <>
+                            <Check className="w-4 h-4 text-green-400" />
+                            <span className="text-xs text-green-400 font-medium">Copied</span>
+                        </>
                     ) : (
-                        <Copy className="w-4 h-4" />
+                        <>
+                            <Copy className="w-4 h-4" />
+                        </>
                     )}
                 </button>
             </div>
-            <code className="block text-sm leading-relaxed">
-                {code ? highlightCode(code) : children}
-            </code>
-        </pre>
+
+            {/* Code content */}
+            <pre
+                className="bg-gray-950 overflow-x-auto p-4 text-sm leading-relaxed"
+                {...props}
+            >
+                <code className="block">
+                    {code ? highlightCode(code) : children}
+                </code>
+            </pre>
+        </div>
     )
 }
