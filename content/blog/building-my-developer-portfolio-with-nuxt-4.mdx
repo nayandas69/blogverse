@@ -139,24 +139,24 @@ The `_shared.scss` partial uses `@forward` to expose both variables and mixins a
 @forward 'mixins';
 ```
 
-And in `nuxt.config.js`, the magic happens:
+And in `nuxt.config.ts`, the magic happens:
 
-```javascript
+```typescript
 vite: {
   css: {
     preprocessorOptions: {
       scss: {
-        api: 'modern-compiler',
+        api: 'modern-compiler' as const,
         loadPaths: [scssDir],
         additionalData: `@use 'sass:color'; @use 'shared' as *;`,
-      },
+      } as Record<string, unknown>,
     },
   },
 },
 ```
 
 <Tip>
-Using `api: 'modern-compiler'` with `sass-embedded` eliminates the legacy JS API deprecation warnings and delivers significantly faster compilation.
+Using `api: 'modern-compiler'` with `sass-embedded` eliminates legacy JS API deprecation warnings and provides significantly faster compilation.
 </Tip>
 
 This means every single component automatically has access to all design tokens and mixins without writing a single `@use` statement. Clean, efficient, and zero duplication.
