@@ -20,7 +20,6 @@ import {
 } from '@/lib/api-utils'
 import { getPostBySlug } from '@/lib/blog'
 
-export const dynamic = 'force-static'
 
 export async function GET(request: NextRequest) {
     try {

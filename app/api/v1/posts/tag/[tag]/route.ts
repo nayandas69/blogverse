@@ -27,7 +27,6 @@ import {
     getExcerpt,
 } from '@/lib/api-utils'
 
-export const dynamic = 'force-static'
 
 /**
  * Generate static parameters for all tags to enable static generation
